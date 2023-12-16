@@ -28,25 +28,25 @@ func checkPathExist(path string) error {
 }
 
 // Validate file path format and if file exists from the path
-func checkInput(body GenerateVideoBody) error {
+func checkInput(body GenerateVideoBody) (string, error) {
 	bgmErr := checkPathExist(body.GgmMusic)
 	if bgmErr != nil {
-		return bgmErr
+		return body.GgmMusic, bgmErr
 	}
 
 	coverErr := checkPathExist(body.CoverPage)
-	if bgmErr != nil {
-		return coverErr
+	if coverErr != nil {
+		return body.CoverPage, coverErr
 	}
 
 	for _, path := range body.VideoPaths {
 		videoErr := checkPathExist(path)
 		if videoErr != nil {
-			return videoErr
+			return path, videoErr
 		}
 	}
 
-	return nil
+	return "", nil
 }
 
 type ErrorMessage struct {
@@ -64,11 +64,11 @@ func (h handler) GenerateVideo(c *gin.Context) {
 		return
 	}
 
-	err := checkInput(body)
+	filePath, err := checkInput(body)
 	if err != nil {
-		log.Printf("error: %+v", err)
+		log.Printf("error: %s: %+v", filePath, err)
 		c.JSON(http.StatusBadRequest, ErrorMessage{
-			ErrorMsg: err.Error(),
+			ErrorMsg: filePath + ": " + err.Error(),
 		})
 		return
 	}
