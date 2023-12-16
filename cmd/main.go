@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hellokvn/go-gin-api-medium/pkg/books"
 	"github.com/hellokvn/go-gin-api-medium/pkg/common/db"
+	"github.com/hellokvn/go-gin-api-medium/pkg/videos"
 	"github.com/spf13/viper"
 )
 
@@ -18,6 +19,7 @@ func main() {
 	h := db.Init(dbUrl)
 
 	books.RegisterRoutes(r, h)
+	videos.RegisterRoutes(r, h)
 	// register more routes here
 
 	r.Run(port)
