@@ -56,6 +56,7 @@ type ErrorMessage struct {
 // Generate video based
 // All params should be absolute path
 func (h handler) GenerateVideo(c *gin.Context) {
+	outputPath := "D:/videos/exported.mp4"
 	body := GenerateVideoBody{}
 
 	// Get requests's body
