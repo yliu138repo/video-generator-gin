@@ -13,3 +13,7 @@ Start server `make server`
 
 # Commands
 To generate the video using plain cli: `ffmpeg -loop 1 -i cover.jpg -i 1.jpg -i 2.jpg -i Jingle-Bells.mp3 -c:v libx264 -tune stillimage -c:a aac -b:a 192k -pix_fmt yuv420p -shortest exported.mp4`
+
+with timeout version on linux with glob`ffmpeg -framerate 1 -pattern_type glob -i '*.jpg' -i Jingle-Bells.mp3 -c:v libx264 -t 15 -pix_fmt yuv420p -vf scale=320:240 out.mp4`
+
+with timeout version on windows `ffmpeg -framerate 1 -i '%d.jpg' -i Jingle-Bells.mp3 -c:v libx264 -pix_fmt yuv420p -vf scale=320:240 out.mp4`
