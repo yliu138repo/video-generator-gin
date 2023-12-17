@@ -16,4 +16,5 @@ To generate the video using plain cli: `ffmpeg -loop 1 -i cover.jpg -i 1.jpg -i 
 
 with timeout version on linux with glob`ffmpeg -framerate 1 -pattern_type glob -i '*.jpg' -i Jingle-Bells.mp3 -c:v libx264 -t 15 -pix_fmt yuv420p -vf scale=320:240 out.mp4`
 
-with timeout version on windows `ffmpeg -framerate 1 -i '%d.jpg' -i Jingle-Bells.mp3 -c:v libx264 -pix_fmt yuv420p -vf scale=320:240 out.mp4`
+with timeout version on windows ends when slids finishes `ffmpeg -framerate 1 -i '%d.jpg' -i Jingle-Bells.mp3 -c:v libx264 -pix_fmt yuv420p -vf scale=320:240 -t 15 -shortest out.mp4`
+
