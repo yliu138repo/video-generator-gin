@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -57,7 +58,6 @@ type ErrorMessage struct {
 // Generate video based
 // All params should be absolute path
 func (h handler) GenerateVideo(c *gin.Context) {
-	// outputPath := "D:/videos/exported.mp4"
 	body := GenerateVideoBody{}
 
 	// Get requests's body
@@ -75,7 +75,8 @@ func (h handler) GenerateVideo(c *gin.Context) {
 		return
 	}
 
-	videoErr := GenerateVideo(body)
+	outputPath, videoErr := GenerateVideo(body)
+	log.Println(outputPath + "===")
 	if videoErr != nil {
 		log.Printf("video generating error: %+v", videoErr)
 		c.JSON(http.StatusInternalServerError, ErrorMessage{
@@ -84,30 +85,31 @@ func (h handler) GenerateVideo(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, body)
+	c.JSON(http.StatusOK, "Video was generated successfully")
 }
 
 // Genreate a new video based on the input
-func GenerateVideo(body GenerateVideoBody) error {
+func GenerateVideo(body GenerateVideoBody) (string, error) {
+	outputPath := filepath.Join(body.VideoDir, "out.mp4")
 	framerate := viper.Get("FRAME_RATE").(string)
-	args := []string{"-y", "-framerate", framerate, "-i", body.VideoDir + "/%d.jpg", "-i", body.GgmMusic, "-c:v", "libx264", "-pix_fmt", "yuv420p", "-vf", "scale=320:240", "-t", "15", "-shortest", body.VideoDir + "/out.mp4"}
+	args := []string{"-y", "-framerate", framerate, "-i", body.VideoDir + "/%d.jpg", "-i", body.GgmMusic, "-c:v", "libx264", "-pix_fmt", "yuv420p", "-vf", "scale=320:240", "-t", "15", "-shortest", outputPath}
 	cmd := exec.Command("ffmpeg", args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
 	stdOut, err := cmd.StdoutPipe()
 	if err != nil {
-		return err
+		return outputPath, err
 	}
 
 	err = cmd.Start()
 	if err != nil {
-		return err
+		return outputPath, err
 	}
 
 	bytes, err := io.ReadAll(stdOut)
 	log.Println(bytes)
 	if err != nil {
-		return err
+		return outputPath, err
 	}
 
 	log.Printf("Waiting for command to finish...")
@@ -116,8 +118,8 @@ func GenerateVideo(body GenerateVideoBody) error {
 	if err != nil {
 		if exitError, ok := err.(*exec.ExitError); ok {
 			log.Printf("Exit error is %+v, error code: %v\n", exitError, exitError.ExitCode())
-			return exitError
+			return outputPath, exitError
 		}
 	}
-	return nil
+	return outputPath, nil
 }
