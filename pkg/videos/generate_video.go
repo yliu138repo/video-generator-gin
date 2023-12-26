@@ -76,7 +76,6 @@ func (h handler) GenerateVideo(c *gin.Context) {
 	}
 
 	outputPath, videoErr := GenerateVideo(body)
-	log.Println(outputPath + "===")
 	if videoErr != nil {
 		log.Printf("video generating error: %+v", videoErr)
 		c.JSON(http.StatusInternalServerError, ErrorMessage{
@@ -85,7 +84,12 @@ func (h handler) GenerateVideo(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, "Video was generated successfully")
+	c.Header("Content-Description", "File Transfer")
+	c.Header("Content-Transfer-Encoding", "binary")
+	c.Header("Content-Disposition", "attachment; filename="+filepath.Base(outputPath))
+	c.Header("Content-Type", "application/octet-stream")
+	c.File(outputPath)
+	// c.JSON(http.StatusOK, "Video was generated successfully")
 }
 
 // Genreate a new video based on the input
