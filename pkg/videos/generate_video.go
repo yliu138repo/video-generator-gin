@@ -10,6 +10,7 @@ import (
 	"os/exec"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
 type GenerateVideoBody struct {
@@ -88,7 +89,8 @@ func (h handler) GenerateVideo(c *gin.Context) {
 
 // Genreate a new video based on the input
 func GenerateVideo(body GenerateVideoBody) error {
-	args := []string{"-y", "-framerate", "1", "-i", body.VideoDir + "/%d.jpg", "-i", body.GgmMusic, "-c:v", "libx264", "-pix_fmt", "yuv420p", "-vf", "scale=320:240", "-t", "15", "-shortest", body.VideoDir + "/out.mp4"}
+	framerate := viper.Get("FRAME_RATE").(string)
+	args := []string{"-y", "-framerate", framerate, "-i", body.VideoDir + "/%d.jpg", "-i", body.GgmMusic, "-c:v", "libx264", "-pix_fmt", "yuv420p", "-vf", "scale=320:240", "-t", "15", "-shortest", body.VideoDir + "/out.mp4"}
 	cmd := exec.Command("ffmpeg", args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr

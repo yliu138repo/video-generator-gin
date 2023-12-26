@@ -6,3 +6,6 @@ dev-server:
 
 install:
 	go mod download
+
+backup-env:
+	cp pkg/common/envs/.env pkg/common/envs/.env.sample
