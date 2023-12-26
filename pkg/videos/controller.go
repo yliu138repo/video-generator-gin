@@ -16,4 +16,5 @@ func RegisterRoutes(r *gin.Engine, db *gorm.DB) {
 
 	routes := r.Group("/videos")
 	routes.POST("/", h.GenerateVideo)
+	routes.POST("/cover", h.GenerateCoverPage)
 }
