@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
+	"github.com/hellokvn/go-gin-api-medium/pkg/common/system"
 	"github.com/spf13/viper"
 )
 
@@ -79,6 +80,11 @@ func GenerateVideo(body GenerateVideoBody) (string, error) {
 	outputPath := filepath.Join(body.VideoDir, "out.mp4")
 	framerate := viper.Get("FRAME_RATE").(string)
 	args := []string{"-y", "-framerate", framerate, "-i", filepath.Join(body.VideoDir, "%d.jpg"), "-i", body.GgmMusic, "-c:v", "libx264", "-pix_fmt", "yuv420p", "-vf", "scale=320:240", "-t", "15", "-shortest", outputPath}
+	cpErr := system.CopyFile(body.CoverPage, filepath.Join(body.VideoDir, "0.jpg"))
+	if cpErr != nil {
+		log.Printf("Failed to copy file from %s to %s\n", body.CoverPage, filepath.Join(body.VideoDir, "0.jpg"))
+		return outputPath, cpErr
+	}
 
 	err := RunCommand("ffmpeg", args)
 	return outputPath, err
