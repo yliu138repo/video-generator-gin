@@ -96,7 +96,7 @@ func (h handler) GenerateVideo(c *gin.Context) {
 func GenerateVideo(body GenerateVideoBody) (string, error) {
 	outputPath := filepath.Join(body.VideoDir, "out.mp4")
 	framerate := viper.Get("FRAME_RATE").(string)
-	args := []string{"-y", "-framerate", framerate, "-i", body.VideoDir + "/%d.jpg", "-i", body.GgmMusic, "-c:v", "libx264", "-pix_fmt", "yuv420p", "-vf", "scale=320:240", "-t", "15", "-shortest", outputPath}
+	args := []string{"-y", "-framerate", framerate, "-i", filepath.Join(body.VideoDir, "%d.jpg"), "-i", body.GgmMusic, "-c:v", "libx264", "-pix_fmt", "yuv420p", "-vf", "scale=320:240", "-t", "15", "-shortest", outputPath}
 	cmd := exec.Command("ffmpeg", args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
