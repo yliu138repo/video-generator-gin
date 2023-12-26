@@ -3,17 +3,19 @@ package videos
 import (
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 
 	"github.com/gin-gonic/gin"
 )
 
 type GenerateVideoBody struct {
-	GgmMusic   string   `json:"bgmMusic"`
-	CoverPage  string   `json:"coverPage"`
-	VideoPaths []string `json:"videoPaths"`
+	GgmMusic  string `json:"bgmMusic"`
+	CoverPage string `json:"coverPage"`
+	VideoDir  string `json:"videoDir"`
 }
 
 func checkPathExist(path string) error {
@@ -39,11 +41,9 @@ func checkInput(body GenerateVideoBody) (string, error) {
 		return body.CoverPage, coverErr
 	}
 
-	for _, path := range body.VideoPaths {
-		videoErr := checkPathExist(path)
-		if videoErr != nil {
-			return path, videoErr
-		}
+	videoDirErr := checkPathExist(body.VideoDir)
+	if videoDirErr != nil {
+		return body.VideoDir, videoDirErr
 	}
 
 	return "", nil
@@ -74,5 +74,48 @@ func (h handler) GenerateVideo(c *gin.Context) {
 		return
 	}
 
+	videoErr := GenerateVideo(body)
+	if videoErr != nil {
+		log.Printf("video generating error: %+v", videoErr)
+		c.JSON(http.StatusInternalServerError, ErrorMessage{
+			ErrorMsg: fmt.Sprintf("video generating error: %+v", videoErr.Error()),
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, body)
+}
+
+// Genreate a new video based on the input
+func GenerateVideo(body GenerateVideoBody) error {
+	args := []string{"-y", "-framerate", "1", "-i", body.VideoDir + "/%d.jpg", "-i", body.GgmMusic, "-c:v", "libx264", "-pix_fmt", "yuv420p", "-vf", "scale=320:240", "-t", "15", "-shortest", body.VideoDir + "/out.mp4"}
+	cmd := exec.Command("ffmpeg", args...)
+	cmd.Stdin = os.Stdin
+	cmd.Stderr = os.Stderr
+	stdOut, err := cmd.StdoutPipe()
+	if err != nil {
+		return err
+	}
+
+	err = cmd.Start()
+	if err != nil {
+		return err
+	}
+
+	bytes, err := io.ReadAll(stdOut)
+	log.Println(bytes)
+	if err != nil {
+		return err
+	}
+
+	log.Printf("Waiting for command to finish...")
+	log.Printf("Process id is %v", cmd.Process.Pid)
+	err = cmd.Wait()
+	if err != nil {
+		if exitError, ok := err.(*exec.ExitError); ok {
+			log.Printf("Exit error is %+v, error code: %v\n", exitError, exitError.ExitCode())
+			return exitError
+		}
+	}
+	return nil
 }
