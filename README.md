@@ -53,7 +53,7 @@ ffmpeg -y \
 -loop 1 -framerate 24 -t 10 -i 1.jpg \
 -i 4.mp4 \
 -i Jingle-Bells.mp3 \
--filter_complex "[0]scale=432:432,setsar=1[im];[1:v]scale=432:432,setsar=1[vid];[im][vid]concat=n=2:v=1:a=0" out.mp4
+-filter_complex "[0]scale=432:432,setsar=1[im];[1:v]scale=432:432,setsar=1[vid];[im][vid]concat=n=2:v=1:a=0" -shortest out.mp4
 ```
 
 ```bash
