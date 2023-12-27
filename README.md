@@ -47,13 +47,14 @@ ffmpeg -y \
 -filter_complex "[0][1][2][3]concat=n=4:v=1:a=0" out.mp4
 ```
 
-Superuser by setting same sar value with background audio
+Superuser by setting same sar value with background audio (working 1)
 ```bash
 ffmpeg -y \
 -loop 1 -framerate 24 -t 10 -i 1.jpg \
 -i 4.mp4 \
+-loop 1 -framerate 24 -t 10 -i 2.jpg \
 -i Jingle-Bells.mp3 \
--filter_complex "[0]scale=432:432,setsar=1[im];[1:v]scale=432:432,setsar=1[vid];[im][vid]concat=n=2:v=1:a=0" -shortest out.mp4
+-filter_complex "[0]scale=432:432,setsar=1[im];[1:v]scale=432:432,setsar=1[vid];[2]scale=432:432,setsar=1[im1];[im][vid][im1]concat=n=3:v=1:a=0" -shortest out.mp4
 ```
 
 ```bash
