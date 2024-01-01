@@ -78,7 +78,8 @@ ffmpeg -y \
 -loop 1 -framerate 24 -t 10 -i 2.jpg \
 -i Jingle-Bells.mp3 \
 -i 6.mp4 \
--filter_complex "[0]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[im];[1:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[vid];[2:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[im1];[4:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[vid1];[im][vid][im1][vid1]concat=n=4:v=1:a=0[v];[3:a]amerge=inputs=1[a]" \
+-i cover.mp4 \
+-filter_complex "[0]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[im];[1:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[vid];[2:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[im1];[4:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[vid1];[5:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[cover];[cover][im][vid][im1][vid1]concat=n=5:v=1:a=0[v];[3:a]amerge=inputs=1[a]" \
 -map "[v]" -map "[a]" -ac 2 output.mp4
 ```
 
