@@ -11,11 +11,19 @@ import (
 )
 
 type GenerateCoverPageBody struct {
-	CoverPage string `json:"coverPage"`
-	Title     string `json:"title"`
+	CoverPage     string `json:"coverPage"`
+	Title         string `json:"title"`
+	DestPath      string `json:"destPath"`
+	StartTime     string `json:"startTime"`
+	EndTime       string `json:"endTime"`
+	FadeInDuation string `json:"fadeInDuration"`
+	FontColor     string `json:"fontColor"`
+	FonSize       string `json:"fontSize"`
+	X             string `json:"x"`
+	Y             string `json:"y"`
 }
 
-func checkCoverPageInput(body GenerateCoverPageBody) error {
+func checkCoverInput(body GenerateCoverPageBody) error {
 	coverErr := CheckPathExist(body.CoverPage)
 	if coverErr != nil {
 		return coverErr
@@ -36,7 +44,7 @@ func (h handler) GenerateCoverPage(c *gin.Context) {
 		return
 	}
 
-	err := checkCoverPageInput(body)
+	err := checkCoverInput(body)
 	if err != nil {
 		log.Printf("error: %+v", err)
 		c.JSON(http.StatusBadRequest, ErrorMessage{
@@ -45,7 +53,7 @@ func (h handler) GenerateCoverPage(c *gin.Context) {
 		return
 	}
 
-	outputPath, coverErr := GenerateCoverPage(body, "white", 100, 1002, 100)
+	outputPath, coverErr := GenerateCoverVideo(body)
 	if coverErr != nil {
 		log.Printf("video generating error: %+v", coverErr)
 		c.JSON(http.StatusInternalServerError, ErrorMessage{
@@ -61,10 +69,24 @@ func (h handler) GenerateCoverPage(c *gin.Context) {
 	c.File(outputPath)
 }
 
-// Generate cover page with tile and styles.
-func GenerateCoverPage(body GenerateCoverPageBody, fontColor string, fontSize int64, x int64, y int64) (string, error) {
-	outputPath := filepath.Join(filepath.Dir(body.CoverPage), "cover-modified.jpg")
-	args := []string{"-y", "-i", body.CoverPage, "-vf", fmt.Sprintf("drawtext=text='%s':fontcolor=%s:fontsize=%d:x=%d:y=%d:", body.Title, fontColor, fontSize, x, y), outputPath}
+// Generate cover page with tile and styles with fadein effects
+// when x and y is empty string, will put the title in the middle of the screen
+func GenerateCoverVideo(body GenerateCoverPageBody) (string, error) {
+	outputPath := filepath.Join(body.DestPath)
+	if body.X == "" {
+		body.X = "(w-text_w)/2"
+	}
+
+	if body.Y == "" {
+		body.Y = "(h-text_h)/2"
+	}
+
+	args := []string{
+		"-y", "-i", body.CoverPage, "-vf",
+		fmt.Sprintf("drawtext=text='%s':fontcolor=%s:fontsize=%s:x=%s:y=%s:enable='between(t,%s,%s)',fade=t=in:st=%s:d=%s:alpha=1", body.Title, body.FontColor, body.FonSize, body.X, body.Y, body.StartTime, body.EndTime, body.StartTime, body.FadeInDuation),
+		"-codec:a", "copy",
+		outputPath,
+	}
 
 	err := RunCommand("ffmpeg", args)
 	return outputPath, err

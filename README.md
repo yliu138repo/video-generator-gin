@@ -48,13 +48,38 @@ ffmpeg -y \
 ```
 
 Superuser by setting same sar value with background audio (working 1)
+while 
+- keep the image/video aspect ratio 
+- padding if there is any blank spaces.
 ```bash
 ffmpeg -y \
 -loop 1 -framerate 24 -t 10 -i 1.jpg \
 -i 4.mp4 \
 -loop 1 -framerate 24 -t 10 -i 2.jpg \
 -i Jingle-Bells.mp3 \
--filter_complex "[0]scale=432:432,setsar=1[im];[1:v]scale=432:432,setsar=1[vid];[2]scale=432:432,setsar=1[im1];[im][vid][im1]concat=n=3:v=1:a=0" -shortest out.mp4
+-filter_complex "[0]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[im];[1:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[vid];[2]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[im1];[im][vid][im1]concat=n=3:v=1:a=0" -shortest out.mp4
+
+# v2 with audio merged and mapped rather than concat with audio directly, adding 4.mp4
+ffmpeg -y \
+-loop 1 -framerate 24 -t 10 -i 1.jpg \
+-i 4.mp4 \
+-loop 1 -framerate 24 -t 10 -i 2.jpg \
+-i Jingle-Bells.mp3 \
+-i 6.mp4 \
+-filter_complex "[0]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[im];[1:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[vid];[2:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[im1];[4:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[vid1];[im][vid][im1][vid1]concat=n=4:v=1:a=0[v];[3:a]amerge=inputs=1[a]" \
+-map "[v]" -map "[a]" -ac 2 output.mp4
+
+
+# v3: v2 + cover page with fade in effect for titles 
+# Will need to know the 
+ffmpeg -y \
+-loop 1 -framerate 24 -t 10 -i 1.jpg \
+-i 4.mp4 \
+-loop 1 -framerate 24 -t 10 -i 2.jpg \
+-i Jingle-Bells.mp3 \
+-i 6.mp4 \
+-filter_complex "[0]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[im];[1:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[vid];[2:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[im1];[4:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[vid1];[im][vid][im1][vid1]concat=n=4:v=1:a=0[v];[3:a]amerge=inputs=1[a]" \
+-map "[v]" -map "[a]" -ac 2 output.mp4
 ```
 
 ```bash
