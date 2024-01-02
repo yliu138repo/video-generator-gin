@@ -119,7 +119,6 @@ func GenerateVideo(body GenerateVideoBody) (string, error) {
 	framerate := viper.Get("FRAME_RATE").(string)
 	args := "-y -framerate " + framerate + " -pix_fmt yuv420p "
 	args = args + inputCmd + " -filter_complex " + filterComplex + ` -map [v] -map [a] -ac 2 -shortest ` + outputPath
-	println(args, "===")
 
 	argsAr := strings.Fields(args)
 
