@@ -8,6 +8,7 @@ import (
 	"github.com/hellokvn/go-gin-api-medium/pkg/common/db"
 	"github.com/hellokvn/go-gin-api-medium/pkg/common/system"
 	"github.com/hellokvn/go-gin-api-medium/pkg/videos"
+	"github.com/penglongli/gin-metrics/ginmetrics"
 	"github.com/spf13/viper"
 )
 
@@ -23,6 +24,14 @@ func main() {
 	dbUrl := viper.Get("DB_URL").(string)
 
 	r := gin.Default()
+	// get global Monitor object
+	m := ginmetrics.GetMonitor()
+
+	// +optional set metric path, default /debug/metrics
+	m.SetMetricPath("/metrics")
+	// set middleware for gin
+	m.Use(r)
+
 	h := db.Init(dbUrl)
 
 	books.RegisterRoutes(r, h)

@@ -134,4 +134,4 @@ https://github.com/penglongli/gin-metrics
 - [mp3 download](https://mp3juice.ms/)
 - [Free stock image download](https://unsplash.com/s/photos/friend)
 - [Stock jpg image donwload](https://www.istockphoto.com/search/2/image-film?phrase=ocean)
-- [Add metrics](https://github.com/penglongli/gin-metrics)
+- [Gin metrics](https://github.com/penglongli/gin-metrics)
