@@ -85,7 +85,7 @@ func (h handler) GenerateVideo(c *gin.Context) {
 
 // Genreate a new video based on the input
 func GenerateVideo(body GenerateVideoBody) (string, error) {
-	outputPath := filepath.Join(filepath.Dir(body.VideoSrcList[0]), "out.mp4")
+	outputPath := filepath.Join(filepath.Dir(body.VideoSrcList[0]), "output.mp4")
 
 	// For video concatenation adjustment
 	aspectRatioWidth, aspectRatioHeight, sar := 1280, 720, 1
