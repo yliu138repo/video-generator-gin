@@ -101,3 +101,6 @@ ffmpeg -y \
 -map [im] -map [vid] -map [aud] out.mp4
 ```
 
+# Useful sites
+[Sample videos](https://www.pexels.com/search/videos/ocean/)
+[mp3 download](https://mp3juice.ms/)
