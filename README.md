@@ -84,6 +84,7 @@ ffmpeg -y \
 
 # v4: v3 on Mac quickplayer with shortest first
 ffmpeg -y \
+-framerate 0.5 \
 -pix_fmt yuv420p \
 -loop 1 -framerate 24 -t 10 -i 1.jpg \
 -i 4.mp4 \
@@ -92,7 +93,7 @@ ffmpeg -y \
 -i 6.mp4 \
 -i cover.mp4 \
 -filter_complex "[0]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[im];[1:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[vid];[2:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[im1];[4:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[vid1];[5:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[cover];[cover][im][vid][im1][vid1]concat=n=5:v=1:a=0[v];[3:a]amerge=inputs=1[a]" \
--map "[v]" -map "[a]" -ac 2 --shortest output.mp4
+-map "[v]" -map "[a]" -ac 2 -shortest output.mp4
 ```
 
 Fade in & out effect

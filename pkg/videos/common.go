@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 )
 
 type ErrorMessage struct {
@@ -54,4 +55,17 @@ func RunCommand(commandStr string, args []string) error {
 		}
 	}
 	return nil
+}
+
+// return true if the file passed is an image
+func checkImage(fileName string) bool {
+	exts := []string{".jpg", ".jpeg", ".png", ".git"}
+	fileExt := filepath.Ext(fileName)
+
+	for _, ext := range exts {
+		if fileExt == ext {
+			return true
+		}
+	}
+	return false
 }
