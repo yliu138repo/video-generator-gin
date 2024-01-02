@@ -118,7 +118,7 @@ func GenerateVideo(body GenerateVideoBody) (string, error) {
 
 	// To compose the arguments of ffmpeg
 	framerate := viper.Get("FRAME_RATE").(string)
-	args := "-y -framerate " + framerate + " -pix-fmt yuv420p "
+	args := "-y -framerate " + framerate + " -pix_fmt yuv420p "
 	args = args + inputCmd + " -filter_complex " + strconv.Quote(filterComplex) + ` -map "[v]" -map "[a]" -ac 2 -shortest ` + outputPath
 	println(args, "===")
 
