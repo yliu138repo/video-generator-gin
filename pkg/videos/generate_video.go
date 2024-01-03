@@ -46,7 +46,7 @@ func checkInput(body GenerateVideoBody) (string, error) {
 	return "", nil
 }
 
-// Generate video based
+// A POST function which generates video based on
 // All params should be absolute path
 func (h handler) GenerateVideo(c *gin.Context) {
 	body := GenerateVideoBody{}

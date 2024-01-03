@@ -135,3 +135,14 @@ https://github.com/penglongli/gin-metrics
 - [Free stock image download](https://unsplash.com/s/photos/friend)
 - [Stock jpg image donwload](https://www.istockphoto.com/search/2/image-film?phrase=ocean)
 - [Gin metrics](https://github.com/penglongli/gin-metrics)
+
+# Further
+action from Leo
+diagram,
+swagger (plugin),
+default background video/image
+
+
+action from John:
+frontend - upload API
+server details
