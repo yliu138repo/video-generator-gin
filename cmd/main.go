@@ -24,6 +24,8 @@ func main() {
 	dbUrl := viper.Get("DB_URL").(string)
 
 	r := gin.Default()
+	// versioned API for backward compatibility
+	v1 := r.Group("/api/v1")
 	// get global Monitor object
 	m := ginmetrics.GetMonitor()
 
@@ -34,8 +36,8 @@ func main() {
 
 	h := db.Init(dbUrl)
 
-	books.RegisterRoutes(r, h)
-	videos.RegisterRoutes(r, h)
+	books.RegisterRoutes(v1, h)
+	videos.RegisterRoutes(v1, h)
 	// register more routes here
 
 	r.Run(port)
