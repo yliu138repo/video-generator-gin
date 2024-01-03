@@ -1,0 +1,22 @@
+info:
+  contact: {}
+paths:
+  /video:
+    post:
+      consumes:
+      - application/json
+      description: A POST function which generates video based on video sources and
+        themes (background, cover and music) selected. All params should be absolute
+        path
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Accept user-provided videos, images and themes, and generate video
+        for user to download
+      tags:
+      - video
+swagger: "2.0"

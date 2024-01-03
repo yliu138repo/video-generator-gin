@@ -1,4 +1,4 @@
-module github.com/hellokvn/go-gin-api-medium
+module github.com/yliu138repo/video-generator-gin
 
 go 1.21
 

@@ -1,8 +1,8 @@
 server:
-	go run cmd/main.go
+	go run main.go
 
 dev-server:
-	gin run cmd/main.go
+	gin run main.go
 
 install:
 	go mod download

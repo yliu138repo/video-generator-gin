@@ -46,8 +46,16 @@ func checkInput(body GenerateVideoBody) (string, error) {
 	return "", nil
 }
 
-// A POST function which generates video based on
-// All params should be absolute path
+// @BasePath /api/v1
+// A POST function which generates video based on video sources and themes (background, cover and music) selected. All params should be absolute path
+// @Summary Accept user-provided videos, images and themes, and generate video for user to download
+// @Schemes
+// @Description A POST function which generates video based on video sources and themes (background, cover and music) selected. All params should be absolute path
+// @Tags video
+// @Accept json
+// @Produce json
+// @Success 200 {string} video file content
+// @Router /video [POST]
 func (h handler) GenerateVideo(c *gin.Context) {
 	body := GenerateVideoBody{}
 

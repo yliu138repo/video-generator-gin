@@ -4,12 +4,15 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hellokvn/go-gin-api-medium/pkg/books"
-	"github.com/hellokvn/go-gin-api-medium/pkg/common/db"
-	"github.com/hellokvn/go-gin-api-medium/pkg/common/system"
-	"github.com/hellokvn/go-gin-api-medium/pkg/videos"
 	"github.com/penglongli/gin-metrics/ginmetrics"
 	"github.com/spf13/viper"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/yliu138repo/video-generator-gin/docs"
+	"github.com/yliu138repo/video-generator-gin/pkg/books"
+	"github.com/yliu138repo/video-generator-gin/pkg/common/db"
+	"github.com/yliu138repo/video-generator-gin/pkg/common/system"
+	"github.com/yliu138repo/video-generator-gin/pkg/videos"
 )
 
 func main() {
@@ -24,8 +27,10 @@ func main() {
 	dbUrl := viper.Get("DB_URL").(string)
 
 	r := gin.Default()
+	basePath := "/api/v1"
+	docs.SwaggerInfo.BasePath = basePath
 	// versioned API for backward compatibility
-	v1 := r.Group("/api/v1")
+	v1 := r.Group(basePath)
 	// get global Monitor object
 	m := ginmetrics.GetMonitor()
 
@@ -40,5 +45,7 @@ func main() {
 	videos.RegisterRoutes(v1, h)
 	// register more routes here
 
+	// Swagger routes
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	r.Run(port)
 }
