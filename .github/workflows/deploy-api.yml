@@ -12,7 +12,7 @@ on:
 jobs:
 
   build:
-    runs-on: centos7
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
 
@@ -27,7 +27,7 @@ jobs:
     - name: Build
       run: |
         mkdir -p build
-        go build -o build/video-generator-api
+        CGO_ENABLED=0 go build -o build/video-generator-api
     - name: install ssh keys
       # check this thread to understand why its needed:
       # https://stackoverflow.com/a/70447517
