@@ -26,7 +26,6 @@ jobs:
       run: go test -v ./...
     - name: Build
       run: |
-        mkdir -p build
-        go build -v ./... -o build/vedio-generator-api
+        go build -v ./...
     
         
