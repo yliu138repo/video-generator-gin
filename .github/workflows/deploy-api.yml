@@ -26,10 +26,12 @@ jobs:
       run: go test -v ./...
     - name: Build
       run: |
-        go build -v ./...
+        mkdir -p build
+        go build -o build/video-generator-api
     - name: Check
       run: |
-        ls -lt
+        pwd
+        ls -lt build
     # - name: install ssh keys
     #   # check this thread to understand why its needed:
     #   # https://stackoverflow.com/a/70447517
