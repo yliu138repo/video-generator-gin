@@ -130,6 +130,7 @@ func GenerateVideo(body GenerateVideoBody) (string, error) {
 	args := "-y -framerate " + framerate + " -pix_fmt yuv420p "
 	args = args + inputCmd + " -filter_complex " + filterComplex + ` -map [v] -map [a] -ac 2 -shortest ` + outputPath
 
+	fmt.Printf("%s &&&\n", args)
 	argsAr := strings.Fields(args)
 
 	err := RunCommand("ffmpeg", argsAr)
