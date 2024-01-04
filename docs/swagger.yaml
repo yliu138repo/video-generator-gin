@@ -38,7 +38,36 @@ definitions:
 info:
   contact: {}
 paths:
-  /video:
+  /videos:
+    post:
+      consumes:
+      - application/json
+      description: A POST function which generates video based on video sources and
+        themes (background, cover and music) selected. All params should be absolute
+        path
+      parameters:
+      - description: GenerateVideoBody
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/videos.GenerateVideoBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad requests
+          schema:
+            type: string
+      summary: Accept user-provided videos, images and themes, and generate video
+        for user to download
+      tags:
+      - video
+  /videos/cover:
     post:
       consumes:
       - application/json

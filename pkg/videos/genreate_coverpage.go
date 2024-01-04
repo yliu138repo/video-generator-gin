@@ -47,7 +47,7 @@ func checkCoverInput(body GenerateCoverPageBody) error {
 // @Param req body videos.GenerateCoverPageBody true "GenerateCoverPageBody"
 // @Success 200 {string} video file content
 // @Failure 400 {string} media file does not exist  "Bad requests"
-// @Router /video [POST]
+// @Router /videos/cover [POST]
 func (h handler) GenerateCoverPage(c *gin.Context) {
 	body := GenerateCoverPageBody{}
 	// Get requests's body

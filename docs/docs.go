@@ -15,7 +15,47 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/video": {
+        "/videos": {
+            "post": {
+                "description": "A POST function which generates video based on video sources and themes (background, cover and music) selected. All params should be absolute path",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "video"
+                ],
+                "summary": "Accept user-provided videos, images and themes, and generate video for user to download",
+                "parameters": [
+                    {
+                        "description": "GenerateVideoBody",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/videos.GenerateVideoBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad requests",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/videos/cover": {
             "post": {
                 "description": "A POST function which generates cover videos based on user input, e.g. font, size, styles etc.",
                 "consumes": [
