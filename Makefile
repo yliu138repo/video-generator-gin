@@ -1,6 +1,11 @@
 server: doc
 	go run main.go
 
+build: doc
+	mkdir -p build
+	rm -rf build/*
+	go build -o build/video-generator-api
+
 dev-server:
 	gin run main.go
 
