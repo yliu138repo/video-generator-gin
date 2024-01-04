@@ -36,6 +36,18 @@ func checkCoverInput(body GenerateCoverPageBody) error {
 	return nil
 }
 
+// @BasePath /api/v1
+// A POST function which generates cover videos based on user input, e.g. font, size, styles etc.
+// @Summary Generates cover videos based on user input, e.g. font, size, styles etc.
+// @Schemes
+// @Description A POST function which generates cover videos based on user input, e.g. font, size, styles etc.
+// @Tags video
+// @Accept json
+// @Produce json
+// @Param req body videos.GenerateCoverPageBody true "GenerateCoverPageBody"
+// @Success 200 {string} video file content
+// @Failure 400 {string} media file does not exist  "Bad requests"
+// @Router /video [POST]
 func (h handler) GenerateCoverPage(c *gin.Context) {
 	body := GenerateCoverPageBody{}
 	// Get requests's body

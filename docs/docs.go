@@ -17,7 +17,7 @@ const docTemplate = `{
     "paths": {
         "/video": {
             "post": {
-                "description": "A POST function which generates video based on video sources and themes (background, cover and music) selected. All params should be absolute path",
+                "description": "A POST function which generates cover videos based on user input, e.g. font, size, styles etc.",
                 "consumes": [
                     "application/json"
                 ],
@@ -27,15 +27,15 @@ const docTemplate = `{
                 "tags": [
                     "video"
                 ],
-                "summary": "Accept user-provided videos, images and themes, and generate video for user to download",
+                "summary": "Generates cover videos based on user input, e.g. font, size, styles etc.",
                 "parameters": [
                     {
-                        "description": "GenerateVideoBody",
+                        "description": "GenerateCoverPageBody",
                         "name": "req",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/videos.GenerateVideoBody"
+                            "$ref": "#/definitions/videos.GenerateCoverPageBody"
                         }
                     }
                 ],
@@ -57,6 +57,41 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "videos.GenerateCoverPageBody": {
+            "type": "object",
+            "properties": {
+                "coverPage": {
+                    "type": "string"
+                },
+                "destPath": {
+                    "type": "string"
+                },
+                "endTime": {
+                    "type": "string"
+                },
+                "fadeInDuration": {
+                    "type": "string"
+                },
+                "fontColor": {
+                    "type": "string"
+                },
+                "fontSize": {
+                    "type": "string"
+                },
+                "startTime": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "x": {
+                    "type": "string"
+                },
+                "y": {
+                    "type": "string"
+                }
+            }
+        },
         "videos.GenerateVideoBody": {
             "type": "object",
             "properties": {
