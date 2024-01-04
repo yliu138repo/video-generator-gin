@@ -20,7 +20,7 @@ func main() {
 		log.Fatal("ffmpeg is not installed")
 	}
 
-	viper.SetConfigFile("./pkg/common/envs/.env")
+	viper.SetConfigFile(".env")
 	viper.ReadInConfig()
 
 	port := viper.Get("PORT").(string)

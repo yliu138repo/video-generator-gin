@@ -16,7 +16,7 @@ doc:
 	swag init
 
 backup-env:
-	cp pkg/common/envs/.env pkg/common/envs/.env.sample
+	cp .env .env.sample
 
 cp-env-sample:
-	cp pkg/common/envs/.env.sample pkg/common/envs/.env
+	cp .env.sample .env
