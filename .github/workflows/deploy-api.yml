@@ -41,7 +41,7 @@ jobs:
       run: |
         echo "Copy env files"
         echo "${{ secrets.ENV_TEST }}" > .env
-        scp build/video-generator-api ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/root/videos
+        scp build/video-generator-api .env ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/root/videos
         ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /root/videos && ls -ltr"
     - name: cleanup
       run: rm -rf ~/.ssh  
