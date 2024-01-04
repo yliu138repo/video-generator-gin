@@ -7,3 +7,6 @@ Pre-requisites:
 
 # Docker
 TBD
+
+# Reference
+[run go as a service on centos](https://www.linkedin.com/pulse/how-deploy-sample-go-app-centos-7-amal-krishna-r)

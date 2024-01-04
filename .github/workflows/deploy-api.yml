@@ -39,10 +39,15 @@ jobs:
         ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
     - name: connect and deploy to remote server
       run: |
-        echo "Copy env files"
+        echo "Copy env files and set up applications..."
         echo "${{ secrets.ENV_TEST }}" > .env
         scp build/video-generator-api .env ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/root/videos
         ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /root/videos && ls -ltr"
+
+        echo "Setup systemd service..."
+        scp cicd/video-generator.service ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/etc/systemd/system/video-generator.service
+        systemctl start video-generator.service
+        systemctl enable video-generator.service
     - name: cleanup
       run: rm -rf ~/.ssh  
       
