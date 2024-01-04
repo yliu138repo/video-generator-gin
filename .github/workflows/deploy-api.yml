@@ -5,7 +5,7 @@ name: Go - build video generator API
 
 on:
   push:
-    branches: [ "main", "2-create-cic…linux-server" ]
+    branches: [ "main", "2-create-cicd-on-the-linux-server" ]
   pull_request:
     branches: [ "main" ]
 
