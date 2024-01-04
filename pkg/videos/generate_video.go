@@ -121,14 +121,14 @@ func GenerateVideo(body GenerateVideoBody) (string, error) {
 	for i := 0; i < srcLen; i++ {
 		filterComplex = filterComplex + fmt.Sprintf("[vid%d]", i)
 	}
-	filterComplex = filterComplex + fmt.Sprintf("concat=n=%d:v=1:a=0[v];", (srcLen+1))
+	filterComplexVideo := filterComplex + fmt.Sprintf("concat=n=%d:v=1:a=0[v]", (srcLen+1))
 	// append audio stream
-	filterComplex = filterComplex + fmt.Sprintf("[%d:a]amerge=inputs=1[a]", (srcLen+1))
+	filterComplexAudio := fmt.Sprintf("[%d:a]amerge=inputs=1[a]", (srcLen + 1))
 
 	// To compose the arguments of ffmpeg
 	framerate := viper.Get("FRAME_RATE").(string)
 	args := "-y -framerate " + framerate + " -pix_fmt yuv420p "
-	args = args + inputCmd + " -filter_complex " + filterComplex + ` -map [v] -map [a] -ac 2 -shortest ` + outputPath
+	args = args + inputCmd + " -filter_complex " + filterComplexVideo + " -filter_complex " + filterComplexAudio + ` -map [v] -map [a] -ac 2 -shortest ` + outputPath
 
 	fmt.Printf("%s &&&\n", args)
 	argsAr := strings.Fields(args)
