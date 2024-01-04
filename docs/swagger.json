@@ -17,12 +17,51 @@
                     "video"
                 ],
                 "summary": "Accept user-provided videos, images and themes, and generate video for user to download",
+                "parameters": [
+                    {
+                        "description": "GenerateVideoBody",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/videos.GenerateVideoBody"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    "400": {
+                        "description": "Bad requests",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "videos.GenerateVideoBody": {
+            "type": "object",
+            "properties": {
+                "bgmMusic": {
+                    "type": "string"
+                },
+                "coverPage": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "videoSrcList": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
                     }
                 }
             }

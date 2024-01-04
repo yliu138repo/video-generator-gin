@@ -54,7 +54,9 @@ func checkInput(body GenerateVideoBody) (string, error) {
 // @Tags video
 // @Accept json
 // @Produce json
+// @Param req body videos.GenerateVideoBody true "GenerateVideoBody"
 // @Success 200 {string} video file content
+// @Failure 400 {string} media file does not exist  "Bad requests"
 // @Router /video [POST]
 func (h handler) GenerateVideo(c *gin.Context) {
 	body := GenerateVideoBody{}

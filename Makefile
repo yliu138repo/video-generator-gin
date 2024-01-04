@@ -1,4 +1,4 @@
-server:
+server: doc
 	go run main.go
 
 dev-server:
@@ -6,6 +6,9 @@ dev-server:
 
 install:
 	go mod download
+
+doc:
+	swag init
 
 backup-env:
 	cp pkg/common/envs/.env pkg/common/envs/.env.sample
