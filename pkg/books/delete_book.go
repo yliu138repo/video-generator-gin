@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hellokvn/go-gin-api-medium/pkg/common/models"
+	"github.com/yliu138repo/video-generator-gin/pkg/common/models"
 )
 
 func (h handler) DeleteBook(c *gin.Context) {
