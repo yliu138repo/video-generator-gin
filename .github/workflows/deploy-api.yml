@@ -1,4 +1,4 @@
-name: 
+name: Deploy Video generator APIs
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: [push]
 jobs:
