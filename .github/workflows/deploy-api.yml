@@ -29,6 +29,8 @@ jobs:
     - name: Build
       run: |
         export PATH="$PATH:${home}/go/bin"
+        echo "Setup .env..."
+        echo "${{ secrets.ENV_TEST }}" > .env
         make build-legacy
     - name: install ssh keys
       # check this thread to understand why its needed:
@@ -39,9 +41,8 @@ jobs:
         ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
     - name: connect and deploy to remote server
       run: |
-        echo "Copy env files and set up applications..."
-        echo "${{ secrets.ENV_TEST }}" > .env
-        scp build/video-generator-api .env ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/root/videos
+        echo "Set up applications..."
+        scp build/video-generator-api ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/root/videos
         ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /root/videos && ls -ltr"
 
         echo "Setup systemd service..."

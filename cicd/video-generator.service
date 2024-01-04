@@ -4,7 +4,6 @@ After=multi-user.target
 [Service]
 User=root
 Group=root
-EnvironmentFile=/root/videos/.env
-ExecStart=/bin/bash -c -l '/root/videos/video-generator-api'
+ExecStart=/root/videos/video-generator-api
 [Install]
 WantedBy=multi-user.target

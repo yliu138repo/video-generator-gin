@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	_ "embed"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -15,13 +17,19 @@ import (
 	"gorm.io/gorm"
 )
 
+//go:embed .env
+var env string
+
 func main() {
 	if !system.CommandExists("ffmpeg") {
-		log.Fatal("ffmpeg is not installed")
+		log.Fatal("ffmpeg is not installed.")
 	}
 
-	viper.SetConfigFile(".env")
-	viper.ReadInConfig()
+	viper.SetConfigType("env")
+	viperReadErr := viper.ReadConfig(bytes.NewReader([]byte(env)))
+	if viperReadErr != nil {
+		log.Fatal("Failed to read env file.")
+	}
 
 	port := viper.Get("PORT").(string)
 	// dbUrl := viper.Get("DB_URL").(string)
