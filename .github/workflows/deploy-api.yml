@@ -46,8 +46,7 @@ jobs:
 
         echo "Setup systemd service..."
         scp cicd/video-generator.service ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/etc/systemd/system/video-generator.service
-        systemctl start video-generator.service
-        systemctl enable video-generator.service
+        ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "systemctl start video-generator.service && systemctl enable video-generator.service && systemctl status video-generator.service"
     - name: cleanup
       run: rm -rf ~/.ssh  
       
