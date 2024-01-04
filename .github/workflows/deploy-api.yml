@@ -41,6 +41,9 @@ jobs:
         ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
     - name: connect and deploy to remote server
       run: |
+        echo "Stop service if any..."
+        ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "systemctl stop video-generator.service"
+
         echo "Set up applications..."
         scp build/video-generator-api ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/root/videos
         ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /root/videos && ls -ltr"
