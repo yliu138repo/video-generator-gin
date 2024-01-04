@@ -26,8 +26,7 @@ jobs:
       run: go test -v ./...
     - name: Build
       run: |
-        mkdir -p build
-        CGO_ENABLED=0 go build -o build/video-generator-api
+        make build-legacy
     - name: install ssh keys
       # check this thread to understand why its needed:
       # https://stackoverflow.com/a/70447517
