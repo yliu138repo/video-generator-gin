@@ -10,9 +10,9 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/yliu138repo/video-generator-gin/docs"
 	"github.com/yliu138repo/video-generator-gin/pkg/books"
-	"github.com/yliu138repo/video-generator-gin/pkg/common/db"
 	"github.com/yliu138repo/video-generator-gin/pkg/common/system"
 	"github.com/yliu138repo/video-generator-gin/pkg/videos"
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -24,7 +24,7 @@ func main() {
 	viper.ReadInConfig()
 
 	port := viper.Get("PORT").(string)
-	dbUrl := viper.Get("DB_URL").(string)
+	// dbUrl := viper.Get("DB_URL").(string)
 
 	r := gin.Default()
 	basePath := "/api/v1"
@@ -39,7 +39,8 @@ func main() {
 	// set middleware for gin
 	m.Use(r)
 
-	h := db.Init(dbUrl)
+	// h := db.Init(dbUrl)
+	var h *gorm.DB
 
 	books.RegisterRoutes(v1, h)
 	videos.RegisterRoutes(v1, h)
