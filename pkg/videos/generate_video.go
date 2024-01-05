@@ -1,6 +1,7 @@
 package videos
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
@@ -76,7 +77,7 @@ func (h handler) GenerateVideo(c *gin.Context) {
 		return
 	}
 
-	outputPath, videoErr := GenerateVideo(body)
+	outputPath, videoErr := GenerateVideo(c, body)
 	if videoErr != nil {
 		log.Printf("video generating error: %+v", videoErr)
 		c.JSON(http.StatusInternalServerError, ErrorMessage{
@@ -94,7 +95,7 @@ func (h handler) GenerateVideo(c *gin.Context) {
 }
 
 // Genreate a new video based on the input
-func GenerateVideo(body GenerateVideoBody) (string, error) {
+func GenerateVideo(ctx context.Context, body GenerateVideoBody) (string, error) {
 	outputPath := filepath.Join(filepath.Dir(body.VideoSrcList[0]), "output.mp4")
 
 	// For video concatenation adjustment
@@ -133,6 +134,6 @@ func GenerateVideo(body GenerateVideoBody) (string, error) {
 	fmt.Printf("%s &&&\n", args)
 	argsAr := strings.Fields(args)
 
-	err := RunCommand("ffmpeg", argsAr)
+	err := RunCommandContext(ctx, "ffmpeg", argsAr)
 	return outputPath, err
 }

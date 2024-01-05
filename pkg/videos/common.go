@@ -1,6 +1,7 @@
 package videos
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -25,8 +26,8 @@ func CheckPathExist(path string) error {
 	return nil
 }
 
-func RunCommand(commandStr string, args []string) error {
-	cmd := exec.Command(commandStr, args...)
+func RunCommandContext(ctx context.Context, commandStr string, args []string) error {
+	cmd := exec.CommandContext(ctx, commandStr, args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
 	stdOut, err := cmd.StdoutPipe()
@@ -34,6 +35,7 @@ func RunCommand(commandStr string, args []string) error {
 		return err
 	}
 
+	log.Printf("Starting Process id is %v ...", cmd.Process.Pid)
 	err = cmd.Start()
 	if err != nil {
 		return err
@@ -46,7 +48,6 @@ func RunCommand(commandStr string, args []string) error {
 	}
 
 	log.Printf("Waiting for command to finish...")
-	log.Printf("Process id is %v", cmd.Process.Pid)
 	err = cmd.Wait()
 	if err != nil {
 		if exitError, ok := err.(*exec.ExitError); ok {
