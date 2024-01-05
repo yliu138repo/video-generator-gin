@@ -66,7 +66,7 @@ func (h handler) GenerateCoverPage(c *gin.Context) {
 		return
 	}
 
-	outputPath, coverErr := GenerateCoverVideo(c, body)
+	outputPath, coverErr := GenerateCoverVideo(c.Request.Context(), body)
 	if coverErr != nil {
 		log.Printf("video generating error: %+v", coverErr)
 		c.JSON(http.StatusInternalServerError, ErrorMessage{

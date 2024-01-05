@@ -77,7 +77,7 @@ func (h handler) GenerateVideo(c *gin.Context) {
 		return
 	}
 
-	outputPath, videoErr := GenerateVideo(c, body)
+	outputPath, videoErr := GenerateVideo(c.Request.Context(), body)
 	if videoErr != nil {
 		log.Printf("video generating error: %+v", videoErr)
 		c.JSON(http.StatusInternalServerError, ErrorMessage{

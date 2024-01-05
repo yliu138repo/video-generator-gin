@@ -35,8 +35,8 @@ func RunCommandContext(ctx context.Context, commandStr string, args []string) er
 		return err
 	}
 
-	log.Printf("Starting Process id is %v ...", cmd.Process.Pid)
 	err = cmd.Start()
+	log.Printf("Starting Process id is %v ...", cmd.Process.Pid)
 	if err != nil {
 		return err
 	}
