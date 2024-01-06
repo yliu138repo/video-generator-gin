@@ -1,6 +1,7 @@
 package videos
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -25,8 +26,33 @@ func CheckPathExist(path string) error {
 	return nil
 }
 
-func RunCommand(commandStr string, args []string) error {
-	cmd := exec.Command(commandStr, args...)
+// This will only kick off the command but no waiting the command to finish...s
+func RunCommandContextNoWait(ctx context.Context, commandStr string, args []string) (int, error) {
+	cmd := exec.CommandContext(ctx, commandStr, args...)
+	cmd.Stdin = os.Stdin
+	cmd.Stderr = os.Stderr
+	stdOut, err := cmd.StdoutPipe()
+	if err != nil {
+		return -1, err
+	}
+	defer stdOut.Close()
+
+	err = cmd.Start()
+	log.Printf("Starting Process id is %v ...", cmd.Process.Pid)
+	if err != nil {
+		return -1, err
+	}
+	bytes, err := io.ReadAll(stdOut)
+	log.Println(bytes)
+	if err != nil {
+		return -1, err
+	}
+
+	return cmd.Process.Pid, nil
+}
+
+func RunCommandContext(ctx context.Context, commandStr string, args []string) error {
+	cmd := exec.CommandContext(ctx, commandStr, args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
 	stdOut, err := cmd.StdoutPipe()
@@ -35,6 +61,7 @@ func RunCommand(commandStr string, args []string) error {
 	}
 
 	err = cmd.Start()
+	log.Printf("Starting Process id is %v ...", cmd.Process.Pid)
 	if err != nil {
 		return err
 	}
@@ -46,7 +73,6 @@ func RunCommand(commandStr string, args []string) error {
 	}
 
 	log.Printf("Waiting for command to finish...")
-	log.Printf("Process id is %v", cmd.Process.Pid)
 	err = cmd.Wait()
 	if err != nil {
 		if exitError, ok := err.(*exec.ExitError); ok {

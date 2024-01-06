@@ -5,13 +5,20 @@ name: Go - build video generator API
 
 on:
   push:
-    branches: [ "main", "2-create-cic…linux-server" ]
+    branches: 
+      - '*'         # matches every branch that doesn't contain a '/'
+      - '*/*'       # matches every branch containing a single '/'
+      - '**'        # matches every branch
+      - '!main'   # excludes main branch
+      - '!develop'
+      - '!stage'
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "develop", "stage" ]
+    types: [closed]
 
 jobs:
-
   build:
+    if: (!(github.event.action == 'closed' && github.event.pull_request.merged != true))
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -20,13 +27,39 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: '1.21.x'
-    - name: Install dependencies
-      run: go get .
+    - name: Install dependencies and init
+      run: |
+        go install github.com/swaggo/swag/cmd/swag@latest
+        go get .
+        echo "Setup .env..."
+        echo "${{ secrets.ENV_TEST }}" > .env
     - name: Test
       run: go test -v ./...
     - name: Build
       run: |
-        mkdir -p build
-        go build -v ./... -o build/vedio-generator-api
+        export PATH="$PATH:${home}/go/bin"
+        make build-legacy
+    - name: install ssh keys
+      # check this thread to understand why its needed:
+      # https://stackoverflow.com/a/70447517
+      run: |
+        install -m 600 -D /dev/null ~/.ssh/id_rsa
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+    - name: connect and deploy to remote server
+      run: |
+        echo "Stop service if any..."
+        ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "systemctl stop video-generator.service"
+
+        echo "Set up applications..."
+        scp build/video-generator-api ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/root/videos
+        ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /root/videos && ls -ltr"
+
+        echo "Setup systemd service..."
+        scp cicd/video-generator.service ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/etc/systemd/system/video-generator.service
+        ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "systemctl start video-generator.service && systemctl enable video-generator.service && systemctl status video-generator.service"
+    - name: cleanup
+      run: rm -rf ~/.ssh  
+      
     
         
