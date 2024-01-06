@@ -11,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	"github.com/yliu138repo/video-generator-gin/pkg/common/system"
 )
 
 type GenerateVideoBody struct {
@@ -89,12 +90,19 @@ func (h handler) GenerateVideo(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"outputPath": outputPath,
 		"pid":        pid,
+		"ip":         GetOutboundIP(),
 	})
 }
 
 // Genreate a new video based on the input
+// Note it will remove the file first
 func GenerateVideo(ctx context.Context, body GenerateVideoBody) (string, int, error) {
 	outputPath := filepath.Join(filepath.Dir(body.VideoSrcList[0]), "output.mp4")
+	// Remove if exists
+	rmErr := system.RemoveFileIfExists(outputPath)
+	if rmErr != nil {
+		return outputPath, -1, rmErr
+	}
 
 	// For video concatenation adjustment
 	aspectRatioWidth, aspectRatioHeight, sar := 1280, 720, 1

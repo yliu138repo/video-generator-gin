@@ -27,43 +27,6 @@ func CheckPathExist(path string) error {
 	return nil
 }
 
-// This will only kick off the command but no waiting the command to finish...s
-func RunCommandContextNoWait(ctx context.Context, commandStr string, args []string) int {
-	// cmd := exec.CommandContext(ctx, commandStr, args...)
-	// cmd.Stdin = os.Stdin
-	// cmd.Stderr = os.Stderr
-	// // stdOut, err := cmd.StdoutPipe()
-	// // if err != nil {
-	// // 	return -1, err
-	// // }
-	// // defer stdOut.Close()
-
-	// err := cmd.Start()
-	// log.Printf("Starting Process id is %v ...", cmd.Process.Pid)
-	// if err != nil {
-	// 	log.Printf("Failed to start process %v:  %+v", cmd.Process.Pid, err)
-	// }
-	// // bytes, _ := io.ReadAll(stdOut)
-	// // log.Println(bytes)
-	// go func(cmd *exec.Cmd) {
-	// 	log.Printf("Waiting for command to finish...")
-	// 	err = cmd.Wait()
-	// 	if err != nil {
-	// 		if exitError, ok := err.(*exec.ExitError); ok {
-	// 			log.Printf("Exit error is %+v, error code: %v\n", exitError, exitError.ExitCode())
-	// 		}
-	// 	}
-	// }(cmd)
-
-	// return cmd.Process.Pid, nil
-	cmd := exec.CommandContext(ctx, commandStr, args...)
-	go func() {
-		data, err := cmd.CombinedOutput()
-		log.Println(data, err, "===")
-	}()
-	return -1
-}
-
 func RunCommandContext(ctx context.Context, commandStr string, args []string) error {
 	cmd := exec.CommandContext(ctx, commandStr, args...)
 	cmd.Stdin = os.Stdin
