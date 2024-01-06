@@ -1,0 +1,9 @@
+[Unit]
+Description=Video generator API
+After=multi-user.target
+[Service]
+User=root
+Group=root
+ExecStart=/root/videos/video-generator-api
+[Install]
+WantedBy=multi-user.target

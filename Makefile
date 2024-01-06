@@ -1,10 +1,15 @@
 server: doc
 	go run main.go
 
-build: doc
+build: doc cp-env-sample
 	mkdir -p build
 	rm -rf build/*
 	go build -o build/video-generator-api
+
+build-legacy: doc cp-env-sample
+	mkdir -p build
+	rm -rf build/*
+	CGO_ENABLED=0 go build -o build/video-generator-api
 
 dev-server:
 	gin run main.go
@@ -16,7 +21,7 @@ doc:
 	swag init
 
 backup-env:
-	cp pkg/common/envs/.env pkg/common/envs/.env.sample
+	cp .env .env.sample
 
 cp-env-sample:
-	cp pkg/common/envs/.env.sample pkg/common/envs/.env
+	cp .env.sample .env

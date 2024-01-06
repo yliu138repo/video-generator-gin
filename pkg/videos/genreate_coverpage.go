@@ -1,6 +1,7 @@
 package videos
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
@@ -65,7 +66,7 @@ func (h handler) GenerateCoverPage(c *gin.Context) {
 		return
 	}
 
-	outputPath, coverErr := GenerateCoverVideo(body)
+	outputPath, coverErr := GenerateCoverVideo(c.Request.Context(), body)
 	if coverErr != nil {
 		log.Printf("video generating error: %+v", coverErr)
 		c.JSON(http.StatusInternalServerError, ErrorMessage{
@@ -83,7 +84,7 @@ func (h handler) GenerateCoverPage(c *gin.Context) {
 
 // Generate cover page with tile and styles with fadein effects
 // when x and y is empty string, will put the title in the middle of the screen
-func GenerateCoverVideo(body GenerateCoverPageBody) (string, error) {
+func GenerateCoverVideo(ctx context.Context, body GenerateCoverPageBody) (string, error) {
 	outputPath := filepath.Join(body.DestPath)
 	if body.X == "" {
 		body.X = "(w-text_w)/2"
@@ -100,6 +101,6 @@ func GenerateCoverVideo(body GenerateCoverPageBody) (string, error) {
 		outputPath,
 	}
 
-	err := RunCommand("ffmpeg", args)
+	err := RunCommandContext(ctx, "ffmpeg", args)
 	return outputPath, err
 }
