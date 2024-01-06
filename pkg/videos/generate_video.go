@@ -55,8 +55,8 @@ func checkInput(body GenerateVideoBody) (string, error) {
 // @Accept json
 // @Produce json
 // @Param req body videos.GenerateVideoBody true "GenerateVideoBody"
-// @Success 200 {string} video file content
-// @Failure 400 {string} media file does not exist  "Bad requests"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
 // @Router /videos [POST]
 func (h handler) GenerateVideo(c *gin.Context) {
 	body := GenerateVideoBody{}
@@ -85,12 +85,9 @@ func (h handler) GenerateVideo(c *gin.Context) {
 		return
 	}
 
-	c.Header("Content-Description", "File Transfer")
-	c.Header("Content-Transfer-Encoding", "binary")
-	c.Header("Content-Disposition", "attachment; filename="+filepath.Base(outputPath))
-	c.Header("Content-Type", "application/octet-stream")
-	c.File(outputPath)
-	// c.JSON(http.StatusOK, "Video was generated successfully")
+	c.JSON(http.StatusOK, map[string]interface{}{
+		outputPath: outputPath,
+	})
 }
 
 // Genreate a new video based on the input
