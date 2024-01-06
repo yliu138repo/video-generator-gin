@@ -79,3 +79,11 @@ func RemoveFileIfExists(filepath string) error {
 	}
 	return nil
 }
+
+// Check if file exists
+func FileExists(filepath string) bool {
+	if _, err := os.Stat(filepath); err == nil {
+		return true
+	}
+	return false
+}
