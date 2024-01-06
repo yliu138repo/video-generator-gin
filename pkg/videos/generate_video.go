@@ -77,7 +77,7 @@ func (h handler) GenerateVideo(c *gin.Context) {
 		return
 	}
 
-	outputPath, videoErr := GenerateVideo(c.Request.Context(), body)
+	outputPath, pid, videoErr := GenerateVideo(c.Request.Context(), body)
 	if videoErr != nil {
 		log.Printf("video generating error: %+v", videoErr)
 		c.JSON(http.StatusInternalServerError, ErrorMessage{
@@ -87,12 +87,13 @@ func (h handler) GenerateVideo(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, map[string]interface{}{
-		outputPath: outputPath,
+		"outputPath": outputPath,
+		"pid":        pid,
 	})
 }
 
 // Genreate a new video based on the input
-func GenerateVideo(ctx context.Context, body GenerateVideoBody) (string, error) {
+func GenerateVideo(ctx context.Context, body GenerateVideoBody) (string, int, error) {
 	outputPath := filepath.Join(filepath.Dir(body.VideoSrcList[0]), "output.mp4")
 
 	// For video concatenation adjustment
@@ -131,6 +132,6 @@ func GenerateVideo(ctx context.Context, body GenerateVideoBody) (string, error) 
 	fmt.Printf("%s &&&\n", args)
 	argsAr := strings.Fields(args)
 
-	err := RunCommandContext(ctx, "ffmpeg", argsAr)
-	return outputPath, err
+	pid, err := RunCommand("ffmpeg", argsAr)
+	return outputPath, pid, err
 }
