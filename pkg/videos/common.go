@@ -60,7 +60,8 @@ func RunCommandContext(ctx context.Context, commandStr string, args []string) er
 	return nil
 }
 
-func RunCommand(commandStr string, args []string) (int, error) {
+// Run command and get the result asynchronously
+func RunCommand(commandStr string, args []string, getResult func(cmd *exec.Cmd, cmdErr error)) (int, error) {
 	cmd := exec.Command(commandStr, args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
@@ -84,6 +85,7 @@ func RunCommand(commandStr string, args []string) (int, error) {
 
 		log.Printf("Waiting for command to finish...")
 		err = cmd.Wait()
+		getResult(cmd, err)
 		if err != nil {
 			if exitError, ok := err.(*exec.ExitError); ok {
 				log.Printf("Exit error is %+v, error code: %v\n", exitError, exitError.ExitCode())

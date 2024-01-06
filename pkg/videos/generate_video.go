@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -140,6 +141,8 @@ func GenerateVideo(ctx context.Context, body GenerateVideoBody) (string, int, er
 	fmt.Printf("%s &&&\n", args)
 	argsAr := strings.Fields(args)
 
-	pid, err := RunCommand("ffmpeg", argsAr)
+	pid, err := RunCommand("ffmpeg", argsAr, func(cmd *exec.Cmd, cmdErr error) {
+
+	})
 	return outputPath, pid, err
 }
