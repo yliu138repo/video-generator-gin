@@ -59,7 +59,7 @@ func checkInput(body GenerateVideoBody) (string, error) {
 // @Produce json
 // @Param req body videos.GenerateVideoBody true "GenerateVideoBody"
 // @Success 200 {object} map[string]interface{}
-// @Failure 400 {object} map[string]interface{}
+// @Failure 400 {object} videos.ErrorMessage
 // @Router /videos [POST]
 func (h handler) GenerateVideo(c *gin.Context) {
 	body := GenerateVideoBody{}

@@ -1,4 +1,9 @@
 definitions:
+  videos.ErrorMessage:
+    properties:
+      errorMessage:
+        type: string
+    type: object
   videos.GenerateCoverPageBody:
     properties:
       coverPage:
@@ -85,8 +90,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/videos.ErrorMessage'
       summary: Accept user-provided videos, images and themes, and generate video
         for user to download
       tags:

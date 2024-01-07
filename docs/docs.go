@@ -79,8 +79,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/videos.ErrorMessage"
                         }
                     }
                 }
@@ -128,6 +127,14 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "videos.ErrorMessage": {
+            "type": "object",
+            "properties": {
+                "errorMessage": {
+                    "type": "string"
+                }
+            }
+        },
         "videos.GenerateCoverPageBody": {
             "type": "object",
             "properties": {

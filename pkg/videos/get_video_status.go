@@ -18,7 +18,7 @@ import (
 // @Accept json
 // @Produce json
 // @Success 200 {object} map[string]interface{}
-// @Failure 400 {object} map[string]interface{}
+// @Failure 400 {object} videos.ErrorMessage
 // @Router /videos [GET]
 func (h handler) GetVideoStatus(c *gin.Context) {
 	// Validate input
