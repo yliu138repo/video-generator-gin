@@ -6,11 +6,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	"github.com/yliu138repo/video-generator-gin/pkg/common/system"
 )
 
 type GenerateVideoBody struct {
@@ -33,7 +35,7 @@ func checkInput(body GenerateVideoBody) (string, error) {
 	}
 
 	if len(body.VideoSrcList) == 0 {
-		errMsg := "No video src provided"
+		errMsg := "no video src provided"
 		return errMsg, errors.New(errMsg)
 	}
 
@@ -56,8 +58,8 @@ func checkInput(body GenerateVideoBody) (string, error) {
 // @Accept json
 // @Produce json
 // @Param req body videos.GenerateVideoBody true "GenerateVideoBody"
-// @Success 200 {string} video file content
-// @Failure 400 {string} media file does not exist  "Bad requests"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} videos.ErrorMessage
 // @Router /videos [POST]
 func (h handler) GenerateVideo(c *gin.Context) {
 	body := GenerateVideoBody{}
@@ -77,7 +79,7 @@ func (h handler) GenerateVideo(c *gin.Context) {
 		return
 	}
 
-	outputPath, videoErr := GenerateVideo(c.Request.Context(), body)
+	outputPath, pid, videoErr := GenerateVideo(c.Request.Context(), body)
 	if videoErr != nil {
 		log.Printf("video generating error: %+v", videoErr)
 		c.JSON(http.StatusInternalServerError, ErrorMessage{
@@ -86,17 +88,28 @@ func (h handler) GenerateVideo(c *gin.Context) {
 		return
 	}
 
-	c.Header("Content-Description", "File Transfer")
-	c.Header("Content-Transfer-Encoding", "binary")
-	c.Header("Content-Disposition", "attachment; filename="+filepath.Base(outputPath))
-	c.Header("Content-Type", "application/octet-stream")
-	c.File(outputPath)
-	// c.JSON(http.StatusOK, "Video was generated successfully")
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"outputPath": outputPath,
+		"pid":        pid,
+		"ip":         GetOutboundIP(),
+	})
+}
+
+type ProcessResult struct {
+	ErrorCode      int   `json:"errorCode"`
+	Error          error `json:"error"`
+	ProcessSucceed bool  `json:"processSucceed"`
 }
 
 // Genreate a new video based on the input
-func GenerateVideo(ctx context.Context, body GenerateVideoBody) (string, error) {
+// Note it will remove the file first
+func GenerateVideo(ctx context.Context, body GenerateVideoBody) (string, int, error) {
 	outputPath := filepath.Join(filepath.Dir(body.VideoSrcList[0]), "output.mp4")
+	// Remove if exists
+	rmErr := system.RemoveFileIfExists(outputPath)
+	if rmErr != nil {
+		return outputPath, -1, rmErr
+	}
 
 	// For video concatenation adjustment
 	aspectRatioWidth, aspectRatioHeight, sar := 1280, 720, 1
@@ -134,6 +147,38 @@ func GenerateVideo(ctx context.Context, body GenerateVideoBody) (string, error) 
 	fmt.Printf("%s &&&\n", args)
 	argsAr := strings.Fields(args)
 
-	err := RunCommandContext(ctx, "ffmpeg", argsAr)
-	return outputPath, err
+	pid, err := RunCommand("ffmpeg", argsAr, func(cmd *exec.Cmd, cmdErr error) {
+		log.Printf("Inserting record - PID: %d, Process succeed: %+v,  error code: %+v, error: %+v\n", cmd.Process.Pid, cmd.ProcessState.Success(), cmd.ProcessState.ExitCode(), cmdErr)
+		currentWD, err := system.CurrentWD()
+		if err != nil {
+			log.Printf("Failed to get current WD: %+v\n", err)
+		}
+		resultFilePath := fmt.Sprintf("%s/result.json", currentWD)
+		resultJson, err := system.ReadJson[ProcessResult](resultFilePath)
+		pidStr := fmt.Sprintf("%d", cmd.Process.Pid)
+		if err != nil {
+			resultMap := map[string]interface{}{}
+			resultMap[pidStr] = ProcessResult{
+				ErrorCode:      cmd.ProcessState.ExitCode(),
+				Error:          cmdErr,
+				ProcessSucceed: cmd.ProcessState.Success(),
+			}
+			writeErr := system.WriteJson(resultFilePath, resultMap)
+			if writeErr != nil {
+				log.Printf("Failed to write json file to %s: %+v\n", resultFilePath, writeErr)
+			}
+		} else {
+			resultJson[pidStr] = ProcessResult{
+				ErrorCode:      cmd.ProcessState.ExitCode(),
+				Error:          cmdErr,
+				ProcessSucceed: cmd.ProcessState.Success(),
+			}
+			writeErr := system.WriteJson(resultFilePath, resultJson)
+			if writeErr != nil {
+				log.Printf("Failed to write json file to %s: %+v\n", resultFilePath, writeErr)
+			}
+		}
+
+	})
+	return outputPath, pid, err
 }

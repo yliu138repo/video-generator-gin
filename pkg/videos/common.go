@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -24,31 +25,6 @@ func CheckPathExist(path string) error {
 		return err
 	}
 	return nil
-}
-
-// This will only kick off the command but no waiting the command to finish...s
-func RunCommandContextNoWait(ctx context.Context, commandStr string, args []string) (int, error) {
-	cmd := exec.CommandContext(ctx, commandStr, args...)
-	cmd.Stdin = os.Stdin
-	cmd.Stderr = os.Stderr
-	stdOut, err := cmd.StdoutPipe()
-	if err != nil {
-		return -1, err
-	}
-	defer stdOut.Close()
-
-	err = cmd.Start()
-	log.Printf("Starting Process id is %v ...", cmd.Process.Pid)
-	if err != nil {
-		return -1, err
-	}
-	bytes, err := io.ReadAll(stdOut)
-	log.Println(bytes)
-	if err != nil {
-		return -1, err
-	}
-
-	return cmd.Process.Pid, nil
 }
 
 func RunCommandContext(ctx context.Context, commandStr string, args []string) error {
@@ -77,10 +53,46 @@ func RunCommandContext(ctx context.Context, commandStr string, args []string) er
 	if err != nil {
 		if exitError, ok := err.(*exec.ExitError); ok {
 			log.Printf("Exit error is %+v, error code: %v\n", exitError, exitError.ExitCode())
+			log.Println(cmd.Args, "===")
 			return exitError
 		}
 	}
 	return nil
+}
+
+// Run command and get the result asynchronously
+func RunCommand(commandStr string, args []string, getResult func(cmd *exec.Cmd, cmdErr error)) (int, error) {
+	cmd := exec.Command(commandStr, args...)
+	cmd.Stdin = os.Stdin
+	cmd.Stderr = os.Stderr
+	stdOut, err := cmd.StdoutPipe()
+	if err != nil {
+		return -1, err
+	}
+
+	err = cmd.Start()
+	log.Printf("Starting Process id is %v ...", cmd.Process.Pid)
+	if err != nil {
+		return -1, err
+	}
+
+	go func() {
+		bytes, err := io.ReadAll(stdOut)
+		log.Println(bytes)
+		if err != nil {
+			log.Printf("Failed to read the stdout pipeline: %+v\n", err)
+		}
+
+		log.Printf("Waiting for command to finish...")
+		err = cmd.Wait()
+		getResult(cmd, err)
+		if err != nil {
+			if exitError, ok := err.(*exec.ExitError); ok {
+				log.Printf("Exit error is %+v, error code: %v\n", exitError, exitError.ExitCode())
+			}
+		}
+	}()
+	return cmd.Process.Pid, nil
 }
 
 // return true if the file passed is an image
@@ -94,4 +106,17 @@ func checkImage(fileName string) bool {
 		}
 	}
 	return false
+}
+
+// Get preferred outbound ip of this machine
+func GetOutboundIP() net.IP {
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close()
+
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+
+	return localAddr.IP
 }

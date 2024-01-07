@@ -24,3 +24,7 @@ go.work
 .env
 
 build/
+
+video-generation.json
+.vscode/
+result.json

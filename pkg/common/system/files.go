@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"syscall"
 )
 
 // CopyFile copies a file from src to dst. If src and dst files exist, and are
@@ -64,4 +65,34 @@ func copyFileContents(src, dst string) (err error) {
 	}
 	err = out.Sync()
 	return
+}
+
+// Delete file
+func RemoveFileIfExists(filepath string) error {
+	err := os.Remove(filepath)
+	if err != nil {
+		e, ok := err.(*os.PathError)
+		if !(ok && e.Err == syscall.ENOENT) {
+			// The file didn't exist
+			return err
+		}
+	}
+	return nil
+}
+
+// Check if file exists
+func FileExists(filepath string) bool {
+	if _, err := os.Stat(filepath); err == nil {
+		return true
+	}
+	return false
+}
+
+// Get current working directory
+func CurrentWD() (string, error) {
+	directory, err := os.Getwd() //get the current directory using the built-in function
+	if err != nil {
+		return "", err
+	}
+	return directory, nil
 }

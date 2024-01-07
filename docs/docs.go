@@ -16,6 +16,35 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/videos": {
+            "get": {
+                "description": "A GET function which fetch the video generating status, Output path should be absolute.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "video"
+                ],
+                "summary": "Accespt query params PID: process ID, ip: IP address of the server, outputPath: the pre-provided output path for the video",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "A POST function which generates video based on video sources and themes (background, cover and music) selected. All params should be absolute path",
                 "consumes": [
@@ -43,13 +72,14 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
-                        "description": "Bad requests",
+                        "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/videos.ErrorMessage"
                         }
                     }
                 }
@@ -97,6 +127,14 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "videos.ErrorMessage": {
+            "type": "object",
+            "properties": {
+                "errorMessage": {
+                    "type": "string"
+                }
+            }
+        },
         "videos.GenerateCoverPageBody": {
             "type": "object",
             "properties": {

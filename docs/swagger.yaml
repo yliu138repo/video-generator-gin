@@ -1,4 +1,9 @@
 definitions:
+  videos.ErrorMessage:
+    properties:
+      errorMessage:
+        type: string
+    type: object
   videos.GenerateCoverPageBody:
     properties:
       coverPage:
@@ -39,6 +44,28 @@ info:
   contact: {}
 paths:
   /videos:
+    get:
+      consumes:
+      - application/json
+      description: A GET function which fetch the video generating status, Output
+        path should be absolute.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 'Accespt query params PID: process ID, ip: IP address of the server,
+        outputPath: the pre-provided output path for the video'
+      tags:
+      - video
     post:
       consumes:
       - application/json
@@ -58,11 +85,12 @@ paths:
         "200":
           description: OK
           schema:
-            type: string
+            additionalProperties: true
+            type: object
         "400":
-          description: Bad requests
+          description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/videos.ErrorMessage'
       summary: Accept user-provided videos, images and themes, and generate video
         for user to download
       tags:
