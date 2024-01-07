@@ -35,7 +35,7 @@ func checkInput(body GenerateVideoBody) (string, error) {
 	}
 
 	if len(body.VideoSrcList) == 0 {
-		errMsg := "No video src provided"
+		errMsg := "no video src provided"
 		return errMsg, errors.New(errMsg)
 	}
 
@@ -95,6 +95,12 @@ func (h handler) GenerateVideo(c *gin.Context) {
 	})
 }
 
+type ProcessResult struct {
+	ErrorCode      int   `json:"errorCode"`
+	Error          error `json:"error"`
+	ProcessSucceed bool  `json:"processSucceed"`
+}
+
 // Genreate a new video based on the input
 // Note it will remove the file first
 func GenerateVideo(ctx context.Context, body GenerateVideoBody) (string, int, error) {
@@ -142,6 +148,36 @@ func GenerateVideo(ctx context.Context, body GenerateVideoBody) (string, int, er
 	argsAr := strings.Fields(args)
 
 	pid, err := RunCommand("ffmpeg", argsAr, func(cmd *exec.Cmd, cmdErr error) {
+		log.Printf("Inserting record - PID: %d, Process succeed: %+v,  error code: %+v, error: %+v\n", cmd.Process.Pid, cmd.ProcessState.Success(), cmd.ProcessState.ExitCode(), cmdErr)
+		currentWD, err := system.CurrentWD()
+		if err != nil {
+			log.Printf("Failed to get current WD: %+v\n", err)
+		}
+		resultFilePath := fmt.Sprintf("%s/result.json", currentWD)
+		resultJson, err := system.ReadJson[ProcessResult](resultFilePath)
+		pidStr := fmt.Sprintf("%d", cmd.Process.Pid)
+		if err != nil {
+			resultMap := map[string]interface{}{}
+			resultMap[pidStr] = ProcessResult{
+				ErrorCode:      cmd.ProcessState.ExitCode(),
+				Error:          cmdErr,
+				ProcessSucceed: cmd.ProcessState.Success(),
+			}
+			writeErr := system.WriteJson(resultFilePath, resultMap)
+			if writeErr != nil {
+				log.Printf("Failed to write json file to %s: %+v\n", resultFilePath, writeErr)
+			}
+		} else {
+			resultJson[pidStr] = ProcessResult{
+				ErrorCode:      cmd.ProcessState.ExitCode(),
+				Error:          cmdErr,
+				ProcessSucceed: cmd.ProcessState.Success(),
+			}
+			writeErr := system.WriteJson(resultFilePath, resultJson)
+			if writeErr != nil {
+				log.Printf("Failed to write json file to %s: %+v\n", resultFilePath, writeErr)
+			}
+		}
 
 	})
 	return outputPath, pid, err

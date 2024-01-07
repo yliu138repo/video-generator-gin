@@ -26,3 +26,5 @@ go.work
 build/
 
 video-generation.json
+.vscode/
+result.json

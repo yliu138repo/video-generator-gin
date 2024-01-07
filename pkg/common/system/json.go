@@ -2,47 +2,34 @@ package system
 
 import (
 	"encoding/json"
+	"io"
 	"os"
 )
 
 // Write json to the given filename using efficient way to encode json data
-func WriteJson(filepath string, dataList []map[string]interface{}) error {
-	file, err := os.OpenFile(filepath, os.O_CREATE, os.ModePerm)
+func WriteJson[R any](filepath string, jsondata map[string]R) error {
+	jsonString, err := json.MarshalIndent(jsondata, "", "  ")
 	if err != nil {
 		return err
 	}
-	defer file.Close()
 
-	encoder := json.NewEncoder(file)
-	encodeErr := encoder.Encode(dataList)
-
-	if encodeErr != nil {
-		return encodeErr
+	writeErr := os.WriteFile(filepath, jsonString, os.ModePerm)
+	if writeErr != nil {
+		return writeErr
 	}
-
 	return nil
 }
 
 // Read json from the filepath
-func ReadJson(filepath string) ([]map[string]interface{}, error) {
+func ReadJson[R any](filepath string) (map[string]R, error) {
 	file, err := os.Open(filepath)
 	if err != nil {
 		return nil, err
 	}
 	defer file.Close()
+	byteValue, _ := io.ReadAll(file)
+	var result map[string]R
+	json.Unmarshal([]byte(byteValue), &result)
 
-	decoder := json.NewDecoder(file)
-
-	dataList := []map[string]interface{}{}
-
-	// Read the array open bracket
-	decoder.Token()
-
-	data := map[string]interface{}{}
-	for decoder.More() {
-		decoder.Decode(&data)
-		dataList = append(dataList, data)
-	}
-
-	return dataList, nil
+	return result, nil
 }

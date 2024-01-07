@@ -87,3 +87,12 @@ func FileExists(filepath string) bool {
 	}
 	return false
 }
+
+// Get current working directory
+func CurrentWD() (string, error) {
+	directory, err := os.Getwd() //get the current directory using the built-in function
+	if err != nil {
+		return "", err
+	}
+	return directory, nil
+}

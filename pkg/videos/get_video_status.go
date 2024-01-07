@@ -2,9 +2,8 @@ package videos
 
 import (
 	"fmt"
+	"log"
 	"net/http"
-	"os"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/yliu138repo/video-generator-gin/pkg/common/system"
@@ -38,6 +37,7 @@ func (h handler) GetVideoStatus(c *gin.Context) {
 		})
 		return
 	}
+	fmt.Println(outputPath)
 
 	pidStr, ok := c.GetQuery("pid")
 	if !ok {
@@ -47,31 +47,48 @@ func (h handler) GetVideoStatus(c *gin.Context) {
 		return
 	}
 
-	pid, err := strconv.ParseInt(pidStr, 10, 64)
+	// pid, err := strconv.ParseInt(pidStr, 10, 64)
+	// if err != nil {
+	// 	c.JSON(http.StatusBadRequest, ErrorMessage{
+	// 		ErrorMsg: "pid is not a valid format",
+	// 	})
+	// 	return
+	// }
+
+	currentWD, err := system.CurrentWD()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorMessage{
-			ErrorMsg: "pid is not a valid format",
+		log.Printf("Failed to get current WD: %+v\n", err)
+	}
+	resultFilePath := fmt.Sprintf("%s/result.json", currentWD)
+	resultJson, err := system.ReadJson[ProcessResult](resultFilePath)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, ErrorMessage{
+			ErrorMsg: fmt.Sprintf("Failed to open result.json: %+v", err),
 		})
 		return
 	}
 
-	if system.FileExists(outputPath) {
+	if processResult, ok := resultJson[pidStr]; !ok {
 		c.JSON(http.StatusOK, map[string]interface{}{
-			"videoGenerated": true,
-			"processStatus":  "Done",
+			"message":        "Process still processing",
+			"videoGenerated": false,
 		})
 		return
 	} else {
-		_, err := os.FindProcess(int(pid))
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, ErrorMessage{
-				ErrorMsg: fmt.Sprintf("Failed to run the PID: %+v", err),
+		if processResult.ProcessSucceed {
+			c.JSON(http.StatusOK, map[string]interface{}{
+				"outputPath":     outputPath,
+				"videoGenerated": true,
+				"exitCode":       processResult.ErrorCode,
 			})
 		} else {
-			c.JSON(http.StatusOK, map[string]interface{}{
-				"videoGenerated": false,
-				"processStatus":  "Running",
+			c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"errorMsg":  fmt.Sprintf("Process PID %s failed to generate video", pidStr),
+				"exitCode":  processResult.ErrorCode,
+				"exitError": processResult.Error,
 			})
 		}
 	}
+
 }
