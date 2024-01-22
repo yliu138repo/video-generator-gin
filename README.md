@@ -76,22 +76,35 @@ ffmpeg -y \
 -loop 1 -framerate 24 -t 10 -i 1.jpg \
 -i 4.mp4 \
 -loop 1 -framerate 24 -t 10 -i 2.jpg \
--i Jingle-Bells.mp3 \
+-i /Users/yangliu/vidoes/media/theme/ocean/bgm.mp3 \
 -i 6.mp4 \
 -i cover.mp4 \
 -filter_complex "[0]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[im];[1:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[vid];[2:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[im1];[4:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[vid1];[5:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[cover];[cover][im][vid][im1][vid1]concat=n=5:v=1:a=0[v];[3:a]amerge=inputs=1[a]" \
--map "[v]" -map "[a]" -ac 2 \
---shortest output.mp4
+-map "[v]" -map "[a]" -ac 2 output.mp4
+
+# v4: v3 on Mac quickplayer with shortest first
+ffmpeg -y \
+-pix_fmt yuv420p \
+-loop 1 -framerate 24 -t 10 -i 1.jpg \
+-i 4.mp4 \
+-loop 1 -framerate 24 -t 10 -i 2.jpg \
+-i /Users/yangliu/vidoes/media/theme/ocean/bgm.mp3 \
+-i 6.mp4 \
+-i cover.mp4 \
+-filter_complex "[0]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[im];[1:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[vid];[2:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[im1];[4:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[vid1];[5:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[cover];[cover][im][vid][im1][vid1]concat=n=5:v=1:a=0[v];[3:a]amerge=inputs=1[a]" \
+-map "[v]" -map "[a]" -ac 2 --shortest output.mp4
 ```
 
-How to tranist with zoom effect
+Fade in & out effect
 ```bash
+# Experiment
 ffmpeg -y \
--i "4.mp4" \
--loop 1 -i "1.jpg" \
+-i "6.mp4" -loop 1 \
+-i "1.jpg" \
 -filter_complex "[1:v]scale=w='if(between(t,10,14),1469-(1469-293)*(t-10)/4,if(lt(t,10),1469,293))':h='if(between(t,10,14),856-(856-171)*(t-10)/4,if(lt(t,10),856,171))':eval=frame[img];[0:v][img]overlay=x='if(between(t,10,14),(W-w)/2-((W-w)/2-10)*(t-10)/4,if(lt(t,10),(W-w)/2,10))':y='if(between(t,10,14),(H-h)/2-((H-h)/2-(H-h-40))*(t-10)/4,if(lt(t,10),(H-h)/2,H-h-40))':shortest=1" \
 -crf 18 -c:a copy out.mp4
 ```
+
 
 ```bash
 ffmpeg -y \
@@ -111,3 +124,8 @@ ffmpeg -y \
 -map [im] -map [vid] -map [aud] out.mp4
 ```
 
+# Useful sites
+[Sample videos](https://www.pexels.com/search/videos/ocean/)
+[mp3 download](https://mp3juice.ms/)
+[Free stock image download](https://unsplash.com/s/photos/friend)
+[Stock jpg image donwload](https://www.istockphoto.com/search/2/image-film?phrase=ocean)
