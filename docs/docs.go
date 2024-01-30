@@ -184,8 +184,16 @@ const docTemplate = `{
                 "videoSrcList": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/videos.VideoSrc"
                     }
+                }
+            }
+        },
+        "videos.VideoSrc": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string"
                 }
             }
         }

@@ -37,8 +37,13 @@ definitions:
         type: string
       videoSrcList:
         items:
-          type: string
+          $ref: '#/definitions/videos.VideoSrc'
         type: array
+    type: object
+  videos.VideoSrc:
+    properties:
+      url:
+        type: string
     type: object
 info:
   contact: {}
