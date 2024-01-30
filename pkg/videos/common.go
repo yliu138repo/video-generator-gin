@@ -9,9 +9,12 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	"github.com/spf13/viper"
 )
 
 type ErrorMessage struct {
@@ -143,4 +146,9 @@ func GetIP2() string {
 	json.Unmarshal(body, &ip)
 
 	return ip.Query
+}
+
+func GenerateDownloadFilePath(filePath string, ip string, protocol string) string {
+	return fmt.Sprintf("%s://%s%s//api/v1/videos/download?file_path=%s",
+		protocol, GetIP2(), viper.Get("PORT").(string), url.QueryEscape(filePath))
 }

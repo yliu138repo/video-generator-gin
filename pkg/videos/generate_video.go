@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"net/url"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -91,7 +90,7 @@ func (h handler) GenerateVideo(c *gin.Context) {
 
 	publicIP := GetIP2()
 	c.JSON(http.StatusOK, map[string]interface{}{
-		"outputPath": fmt.Sprintf("http://%s%s/videos/download?file_path=%s", publicIP, viper.Get("PORT").(string), url.QueryEscape(outputPath)),
+		"outputPath": GenerateDownloadFilePath(outputPath, GetIP2(), "http"),
 		"pid":        pid,
 		"ip":         publicIP,
 	})

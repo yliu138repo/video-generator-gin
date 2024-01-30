@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"net/url"
 
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 	"github.com/yliu138repo/video-generator-gin/pkg/common/system"
 )
 
@@ -79,7 +77,7 @@ func (h handler) GetVideoStatus(c *gin.Context) {
 	} else {
 		if processResult.ProcessSucceed {
 			c.JSON(http.StatusOK, map[string]interface{}{
-				"outputPath":     fmt.Sprintf("http://%s%s/videos/download?file_path=%s", GetIP2(), viper.Get("PORT").(string), url.QueryEscape(outputPath)),
+				"outputPath":     GenerateDownloadFilePath(outputPath, GetIP2(), "http"),
 				"videoGenerated": true,
 				"exitCode":       processResult.ErrorCode,
 			})
