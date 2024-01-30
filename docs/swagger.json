@@ -28,8 +28,7 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/videos.ErrorMessage"
                         }
                     }
                 }
@@ -106,7 +105,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad requests",
+                        "description": "Bad Request",
                         "schema": {
                             "type": "string"
                         }

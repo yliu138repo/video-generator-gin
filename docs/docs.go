@@ -39,8 +39,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/videos.ErrorMessage"
                         }
                     }
                 }
@@ -117,7 +116,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad requests",
+                        "description": "Bad Request",
                         "schema": {
                             "type": "string"
                         }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -89,9 +90,9 @@ func (h handler) GenerateVideo(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, map[string]interface{}{
-		"outputPath": outputPath,
+		"outputPath": url.QueryEscape(outputPath),
 		"pid":        pid,
-		"ip":         GetOutboundIP(),
+		"ip":         GetIP2(),
 	})
 }
 
