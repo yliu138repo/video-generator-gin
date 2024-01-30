@@ -91,7 +91,7 @@ func (h handler) GenerateVideo(c *gin.Context) {
 
 	publicIP := GetIP2()
 	c.JSON(http.StatusOK, map[string]interface{}{
-		"outputPath": fmt.Sprintf("%s/videos/download?file_path=%s", publicIP, url.QueryEscape(outputPath)),
+		"outputPath": fmt.Sprintf("%s:%s/videos/download?file_path=%s", publicIP, viper.Get("PORT").(string), url.QueryEscape(outputPath)),
 		"pid":        pid,
 		"ip":         publicIP,
 	})
