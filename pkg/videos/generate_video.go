@@ -89,10 +89,11 @@ func (h handler) GenerateVideo(c *gin.Context) {
 		return
 	}
 
+	publicIP := GetIP2()
 	c.JSON(http.StatusOK, map[string]interface{}{
-		"outputPath": url.QueryEscape(outputPath),
+		"outputPath": fmt.Sprintf("%s/videos/download?file_path=%s", publicIP, url.QueryEscape(outputPath)),
 		"pid":        pid,
-		"ip":         GetIP2(),
+		"ip":         publicIP,
 	})
 }
 

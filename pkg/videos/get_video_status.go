@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 
 	"github.com/gin-gonic/gin"
 	"github.com/yliu138repo/video-generator-gin/pkg/common/system"
@@ -37,7 +38,6 @@ func (h handler) GetVideoStatus(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Println(outputPath)
 
 	pidStr, ok := c.GetQuery("pid")
 	if !ok {
@@ -78,7 +78,7 @@ func (h handler) GetVideoStatus(c *gin.Context) {
 	} else {
 		if processResult.ProcessSucceed {
 			c.JSON(http.StatusOK, map[string]interface{}{
-				"outputPath":     outputPath,
+				"outputPath":     fmt.Sprintf("%s/videos/download?file_path=%s", GetIP2(), url.QueryEscape(outputPath)),
 				"videoGenerated": true,
 				"exitCode":       processResult.ErrorCode,
 			})
