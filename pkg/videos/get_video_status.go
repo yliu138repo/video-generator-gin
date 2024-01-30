@@ -79,7 +79,7 @@ func (h handler) GetVideoStatus(c *gin.Context) {
 	} else {
 		if processResult.ProcessSucceed {
 			c.JSON(http.StatusOK, map[string]interface{}{
-				"outputPath":     fmt.Sprintf("%s:%s/videos/download?file_path=%s", GetIP2(), viper.Get("PORT").(string), url.QueryEscape(outputPath)),
+				"outputPath":     fmt.Sprintf("http://%s%s/videos/download?file_path=%s", GetIP2(), viper.Get("PORT").(string), url.QueryEscape(outputPath)),
 				"videoGenerated": true,
 				"exitCode":       processResult.ErrorCode,
 			})
