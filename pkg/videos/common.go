@@ -149,6 +149,6 @@ func GetIP2() string {
 }
 
 func GenerateDownloadFilePath(filePath string, ip string, protocol string) string {
-	return fmt.Sprintf("%s://%s%s//api/v1/videos/download?file_path=%s",
+	return fmt.Sprintf("%s://%s%s/api/v1/videos/download?file_path=%s",
 		protocol, GetIP2(), viper.Get("PORT").(string), url.QueryEscape(filePath))
 }
