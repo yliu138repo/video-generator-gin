@@ -37,7 +37,6 @@ func (h handler) GetVideoStatus(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Println(outputPath)
 
 	pidStr, ok := c.GetQuery("pid")
 	if !ok {
@@ -78,7 +77,7 @@ func (h handler) GetVideoStatus(c *gin.Context) {
 	} else {
 		if processResult.ProcessSucceed {
 			c.JSON(http.StatusOK, map[string]interface{}{
-				"outputPath":     outputPath,
+				"outputPath":     GenerateDownloadFilePath(outputPath, GetIP2(), "http"),
 				"videoGenerated": true,
 				"exitCode":       processResult.ErrorCode,
 			})

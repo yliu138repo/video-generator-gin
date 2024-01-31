@@ -2,14 +2,19 @@ package videos
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"log"
 	"net"
+	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	"github.com/spf13/viper"
 )
 
 type ErrorMessage struct {
@@ -108,6 +113,10 @@ func checkImage(fileName string) bool {
 	return false
 }
 
+type IP struct {
+	Query string
+}
+
 // Get preferred outbound ip of this machine
 func GetOutboundIP() net.IP {
 	conn, err := net.Dial("udp", "8.8.8.8:80")
@@ -115,8 +124,31 @@ func GetOutboundIP() net.IP {
 		log.Fatal(err)
 	}
 	defer conn.Close()
-
 	localAddr := conn.LocalAddr().(*net.UDPAddr)
 
 	return localAddr.IP
+}
+
+// This ensures that returned IP are public IP
+func GetIP2() string {
+	req, err := http.Get("http://ip-api.com/json/")
+	if err != nil {
+		return err.Error()
+	}
+	defer req.Body.Close()
+
+	body, err := io.ReadAll(req.Body)
+	if err != nil {
+		return err.Error()
+	}
+
+	var ip IP
+	json.Unmarshal(body, &ip)
+
+	return ip.Query
+}
+
+func GenerateDownloadFilePath(filePath string, ip string, protocol string) string {
+	return fmt.Sprintf("%s://%s%s/api/v1/videos/download?file_path=%s",
+		protocol, GetIP2(), viper.Get("PORT").(string), url.QueryEscape(filePath))
 }

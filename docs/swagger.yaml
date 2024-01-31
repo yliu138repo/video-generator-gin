@@ -37,8 +37,13 @@ definitions:
         type: string
       videoSrcList:
         items:
-          type: string
+          $ref: '#/definitions/videos.VideoSrc'
         type: array
+    type: object
+  videos.VideoSrc:
+    properties:
+      url:
+        type: string
     type: object
 info:
   contact: {}
@@ -60,8 +65,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/videos.ErrorMessage'
       summary: 'Accespt query params PID: process ID, ip: IP address of the server,
         outputPath: the pre-provided output path for the video'
       tags:
@@ -116,7 +120,7 @@ paths:
           schema:
             type: string
         "400":
-          description: Bad requests
+          description: Bad Request
           schema:
             type: string
       summary: Generates cover videos based on user input, e.g. font, size, styles

@@ -18,4 +18,5 @@ func RegisterRoutes(r *gin.RouterGroup, db *gorm.DB) {
 	routes.POST("/", h.GenerateVideo)
 	routes.POST("/cover", h.GenerateCoverPage)
 	routes.GET("/", h.GetVideoStatus)
+	routes.GET("/download", h.DownloadVideo)
 }

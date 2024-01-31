@@ -39,8 +39,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/videos.ErrorMessage"
                         }
                     }
                 }
@@ -117,7 +116,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad requests",
+                        "description": "Bad Request",
                         "schema": {
                             "type": "string"
                         }
@@ -185,8 +184,16 @@ const docTemplate = `{
                 "videoSrcList": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/videos.VideoSrc"
                     }
+                }
+            }
+        },
+        "videos.VideoSrc": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string"
                 }
             }
         }

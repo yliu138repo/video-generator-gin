@@ -15,11 +15,15 @@ import (
 	"github.com/yliu138repo/video-generator-gin/pkg/common/system"
 )
 
+type VideoSrc struct {
+	Url string `json:"url"`
+}
+
 type GenerateVideoBody struct {
-	BgmMusic     string   `json:"bgmMusic"`
-	CoverPage    string   `json:"coverPage"`
-	VideoSrcList []string `json:"videoSrcList"`
-	Title        string   `json:"title"`
+	BgmMusic     string     `json:"bgmMusic"`
+	CoverPage    string     `json:"coverPage"`
+	VideoSrcList []VideoSrc `json:"videoSrcList"`
+	Title        string     `json:"title"`
 }
 
 // Validate file path format and if file exists from the path
@@ -40,9 +44,9 @@ func checkInput(body GenerateVideoBody) (string, error) {
 	}
 
 	for _, videoSrc := range body.VideoSrcList {
-		videoDirErr := CheckPathExist(videoSrc)
+		videoDirErr := CheckPathExist(videoSrc.Url)
 		if videoDirErr != nil {
-			return videoSrc, videoDirErr
+			return videoSrc.Url, videoDirErr
 		}
 	}
 
@@ -88,10 +92,11 @@ func (h handler) GenerateVideo(c *gin.Context) {
 		return
 	}
 
+	publicIP := GetIP2()
 	c.JSON(http.StatusOK, map[string]interface{}{
-		"outputPath": outputPath,
+		"outputPath": GenerateDownloadFilePath(outputPath, GetIP2(), "http"),
 		"pid":        pid,
-		"ip":         GetOutboundIP(),
+		"ip":         publicIP,
 	})
 }
 
@@ -104,7 +109,7 @@ type ProcessResult struct {
 // Genreate a new video based on the input
 // Note it will remove the file first
 func GenerateVideo(ctx context.Context, body GenerateVideoBody) (string, int, error) {
-	outputPath := filepath.Join(filepath.Dir(body.VideoSrcList[0]), "output.mp4")
+	outputPath := filepath.Join(filepath.Dir(body.VideoSrcList[0].Url), "output.mp4")
 	// Remove if exists
 	rmErr := system.RemoveFileIfExists(outputPath)
 	if rmErr != nil {
@@ -118,10 +123,10 @@ func GenerateVideo(ctx context.Context, body GenerateVideoBody) (string, int, er
 	srcLen := len(body.VideoSrcList)
 	inputCmd, filterComplex := "", ""
 	for i, src := range body.VideoSrcList {
-		if checkImage(src) {
-			inputCmd = inputCmd + " -loop 1 -framerate 24 -t 10 -i " + src
+		if checkImage(src.Url) {
+			inputCmd = inputCmd + " -loop 1 -framerate 24 -t 10 -i " + src.Url
 		} else {
-			inputCmd = inputCmd + " -i " + src
+			inputCmd = inputCmd + " -i " + src.Url
 		}
 
 		filterComplex = filterComplex + fmt.Sprintf("[%d:v]%s[vid%d];", i, videoAdjustCmd, i)
